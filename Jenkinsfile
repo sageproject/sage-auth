@@ -24,6 +24,7 @@ pipeline {
           docker.withRegistry('', dhcreds) {
             img.push("0.0.${env.BUILD_ID}")
             img.push("latest")
+          }
         }
       }
     }
