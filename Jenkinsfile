@@ -2,11 +2,15 @@ pipeline {
   agent any
   environment {
     IMAGE_NAME = "obliviobvious/sage-auth"
+    dhcreds = 'DockerHubLogin'
+    img = ''
   }
   stages {
     stage('Build') {
       steps {
-        sh 'docker build -t $IMAGE_NAME .'
+        script {
+          img = docker.build IMAGE_NAME
+        }
       }
     }
     stage('Test') {
@@ -16,15 +20,16 @@ pipeline {
     }
     stage('Publish') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'DockerHubLogin', passwordVariable: 'password', usernameVariable: 'username')]) {
-          sh 'docker login -u ${username} -p ${password}'
-          sh 'docker push $IMAGE_NAME'
+        script {
+          docker.withRegistry('', dhcreds) {
+            img.push("0.0.${env.BUILD_ID}")
+            img.push("latest")
         }
       }
     }
     stage('Deploy') {
       steps {
-        sh 'echo Running kubectl apply'
+        sh 'kubectl get all'
       }
     }
   }
