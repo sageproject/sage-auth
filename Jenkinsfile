@@ -40,7 +40,7 @@ pipeline {
     stage('Deploy Prod') {
       //when { tag 'v*' }
       steps {
-        cd 'deploy'
+        sh 'cd deploy'
         sh 'kubectl apply -f .'
       }
     }
