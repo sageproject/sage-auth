@@ -33,15 +33,17 @@ pipeline {
     stage('Deploy Staging') {
       when { tag 'dev*' }
       steps {
-        cd 'deploy'
-        sh 'kubectl apply -f .'
+        dir('deploy') {
+          sh 'kubectl apply -f sage-auth.yaml'
+        }
       }
     }
     stage('Deploy Prod') {
       //when { tag 'v*' }
       steps {
-        sh 'cd deploy'
-        sh 'kubectl apply -f sage-auth.yaml'
+        dir('deploy') {
+          sh 'kubectl apply -f sage-auth.yaml'
+        }
       }
     }
   }
