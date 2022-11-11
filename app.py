@@ -1,15 +1,32 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, make_response, request, jsonify
+import jwt
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    print(request.args)
-    return render_template("index.html", params=request.args)
+JWTSECRET = "secret123" # Get from env
 
-@app.route("/j")
-def j():
-    return jsonify([{"thing1": 45}, {"thing2": 21}, {"thing3": 32}])
+@app.route("/login", methods=["POST"])
+def login():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    token = jwt.encode({
+        'userid': 101,
+        'exp': datetime.utcnow() + timedelta(minutes=5)
+    }, JWTSECRET)
+
+    return make_response(jsonify({'token': token}), 201)
+
+@app.route("/protected")
+def proto():
+    
+    return jsonify({'protected': 'protected'})
+
+@app.route("/")
+def unproto():
+    
+    return jsonify({'open': 'open'})
 
 
 if __name__ == '__main__':

@@ -8,6 +8,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
+        sh 'echo Building $TAG_NAME'
         script {
           img = docker.build IMAGE_NAME
         }
@@ -19,6 +20,7 @@ pipeline {
       }
     }
     stage('Publish') {
+      //when { tag 'v*' }
       steps {
         script {
           docker.withRegistry('', dhcreds) {
@@ -28,9 +30,18 @@ pipeline {
         }
       }
     }
-    stage('Deploy') {
+    stage('Deploy Staging') {
+      when { tag 'dev*' }
       steps {
-        sh 'kubectl get all'
+        cd 'deploy'
+        sh 'kubectl apply -f .'
+      }
+    }
+    stage('Deploy Prod') {
+      //when { tag 'v*' }
+      steps {
+        cd 'deploy'
+        sh 'kubectl apply -f .'
       }
     }
   }

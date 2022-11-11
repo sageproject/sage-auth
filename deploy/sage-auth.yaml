@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sage-auth
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: obliviobvious/sage-auth
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: "250m"
+            memory: "300M"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-svc
+spec:
+  selector:
+    app: auth
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5000
+      nodePort: 31080
