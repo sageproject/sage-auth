@@ -41,7 +41,7 @@ pipeline {
       //when { tag 'v*' }
       steps {
         sh 'cd deploy'
-        sh 'kubectl apply -f .'
+        sh 'kubectl apply -f sage-auth.yaml'
       }
     }
   }
